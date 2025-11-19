@@ -1,0 +1,16 @@
+# Core LangChain packages
+langchain>=1.0.0
+langchain-core>=0.2.0
+langchain-community>=0.2.0
+langchain-ollama>=1.0.0
+
+# Vector store
+faiss-cpu
+
+# Document handling
+pypdf
+
+# Optional utilities
+python-dotenv
+streamlit
+
