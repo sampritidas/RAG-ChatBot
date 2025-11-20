@@ -1,33 +1,32 @@
-import streamlit as st
-from langchain_ollama import Ollama
-from langchain.chains import LLMChain
-from langchain.prompts import PromptTemplate
+import os
+from pypdf import PdfReader
+from langchain_community.vectorstores import FAISS
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_ollama import OllamaEmbeddings
 
-st.title("🦙 Ollama Chatbot")
+DATA_DIR = "data"
+INDEX_DIR = "index"
 
-# Initialize Ollama model
-llm = Ollama(model="llama3.1")  # change model if needed
+# Load PDFs
+pages = []
+for pdf in os.listdir(DATA_DIR):
+    if pdf.endswith(".pdf"):
+        reader = PdfReader(os.path.join(DATA_DIR, pdf))
+        for page in reader.pages:
+            pages.append(page.extract_text())
 
-# Session state to store chat history
-if "history" not in st.session_state:
-    st.session_state.history = []
+print(f"Found {len(pages)} pages.")
 
-# User input
-user_input = st.text_input("Ask me anything:")
+# Split
+splitter = RecursiveCharacterTextSplitter(chunk_size=800, chunk_overlap=100)
+docs = splitter.create_documents(pages)
 
-if user_input:
-    # Prompt template (can be customized)
-    template = "Answer the question as helpfully as possible:\nQuestion: {question}\nAnswer:"
-    prompt = PromptTemplate(template=template, input_variables=["question"])
+# Embeddings
+emb = OllamaEmbeddings(model="nomic-embed-text")
+print("Embedding…")
+faiss_store = FAISS.from_documents(docs, emb)
 
-    # Create chain and get response
-    chain = LLMChain(llm=llm, prompt=prompt)
-    response = chain.run({"question": user_input})
+os.makedirs(INDEX_DIR, exist_ok=True)
+faiss_store.save_local(INDEX_DIR)
 
-    # Save to history
-    st.session_state.history.append({"user": user_input, "bot": response})
-
-# Display chat history
-for chat in st.session_state.history:
-    st.markdown(f"**You:** {chat['user']}")
-    st.markdown(f"**Bot:** {chat['bot']}")
+print("Index saved to index/")

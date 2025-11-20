@@ -12,4 +12,4 @@
    ├── index.faiss
    ├── index.pkl
 5. Run the Chatbot
-   `streamlit run app.py`
+   `python rag_chat.py`

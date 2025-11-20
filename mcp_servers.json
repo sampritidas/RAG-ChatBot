@@ -1,0 +1,20 @@
+{
+  "servers": [
+    {
+      "id": "trivia",
+      "url": "https://opentdb.com/api_config.php?schema"
+    },
+    {
+      "id": "weather",
+      "url": "https://api.open-meteo.com/v1/forecast?schema"
+    },
+    {
+      "id": "openlibrary",
+      "url": "https://openlibrary.org/schema.json"
+    },
+    {
+      "id": "geodb",
+      "url": "https://geodb-free-service.wirefreethought.com/v1/geo/cities?schema"
+    }
+  ]
+}
